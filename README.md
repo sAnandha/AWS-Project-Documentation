@@ -23,7 +23,7 @@ Each project is documented in a PDF format, which includes:
 
 For further references and resources related to AWS and cloud technologies, visit the following:
 
-1. **Nextwork**(https://www.nextwork.org) A useful platform for cloud-based solutions and related tools.
+1. **Learning Platform**:[Next Work](https://www.nextwork.org) A useful platform for cloud-based Hands On Practical Projects with Free Guidences.
 2. **AWS Documentation**: [AWS Official Documentation](https://docs.aws.amazon.com) – Detailed guides and references for all AWS services.
 3. **AWS Blogs**: [AWS Blogs](https://aws.amazon.com/blogs) – Stay updated on new features and best practices.
 4. **GitHub**: [AWS Samples](https://github.com/aws-samples) – Explore open-source AWS projects and examples.
