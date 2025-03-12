@@ -1,0 +1,57 @@
+import json
+import boto3
+import random
+import string
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('DATABASE TABLE NAME ')
+
+def generate_short_code():
+    """Generate a random 6-character short code"""
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+
+def lambda_handler(event, context):
+    try:
+        body = json.loads(event['body'])
+        original_url = body.get('url')
+
+        if not original_url:
+            return {
+                "statusCode": 400,
+                "headers": get_cors_headers(),
+                "body": json.dumps({"error": "URL required"})
+            }
+
+        # Generate a unique short code
+        while True:
+            short_code = generate_short_code()
+            response = table.get_item(Key={'shortCode': short_code})
+            if 'Item' not in response:  # Ensure it's unique
+                break
+
+        # Save to DynamoDB
+        table.put_item(Item={"shortCode": short_code, "originalURL": original_url})
+
+        # Construct short URL
+        short_url = f" YOUR API INVOKE URL /STAGE NAME /{short_code}"
+
+        return {
+            "statusCode": 200,
+            "headers": get_cors_headers(),
+            "body": json.dumps({"short_url": short_url})
+        }
+    except Exception as e:
+        print(f"ERROR: {str(e)}")
+        return {
+            "statusCode": 500,
+            "headers": get_cors_headers(),
+            "body": json.dumps({"error": str(e)})
+        }
+
+def get_cors_headers():
+    """Allow all websites to access the API (CORS enabled for all)"""
+    return {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+        "Access-Control-Allow-Headers": "Content-Type"
+    }

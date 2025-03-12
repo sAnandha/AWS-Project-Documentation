@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+</head>
+<body style="font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f4f4f4;">
+    <h1 style="color: #333;">URL Shortener</h1>
+
+    <form id="urlForm" style="display: flex; align-items: center; gap: 10px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <input type="text" id="longUrl" placeholder="Enter long URL" required style="width: 300px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
+        <button type="submit" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Shorten</button>
+    </form>
+
+    <p style="margin-top: 15px; font-size: 18px;">
+        Shortened URL: <a id="shortUrl" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;"></a>
+        <button id="copyBtn" style="display: none; padding: 5px 10px; margin-left: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Copy</button>
+    </p>
+    
+    <p id="message" style="margin-top: 10px; font-size: 16px; color: red;"></p>
+
+    <script>
+        document.getElementById('urlForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const longUrl = document.getElementById('longUrl').value.trim();
+            const message = document.getElementById('message');
+            const shortUrlElement = document.getElementById('shortUrl');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // Improved URL validation
+            const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w]{2,}(:\d+)?(\/.*)?$/;
+            if (!urlPattern.test(longUrl)) {
+                message.textContent = "Please enter a valid URL (with http/https).";
+                return;
+            }
+
+            message.textContent = "Processing... Please wait.";
+            message.style.color = "blue";
+            shortUrlElement.textContent = "";
+            shortUrlElement.href = "";
+            copyBtn.style.display = "none";
+
+            try {
+                const response = await fetch('https://your_api_invoke_url/stage name /shorten', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: longUrl }) // ✅ Fixed payload key
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.short_url) {
+                    shortUrlElement.href = data.short_url;
+                    shortUrlElement.innerText = data.short_url;
+                    message.textContent = "URL shortened successfully!";
+                    message.style.color = "green";
+                    copyBtn.style.display = "inline-block";
+                } else {
+                    throw new Error(data.error || "Failed to shorten URL.");
+                }
+            } catch (error) {
+                message.textContent = "Error: " + error.message;
+                message.style.color = "red";
+            }
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const shortUrlElement = document.getElementById('shortUrl');
+            navigator.clipboard.writeText(shortUrlElement.href).then(() => {
+                alert("Short URL copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy:", err);
+            });
+        });
+    </script>
+</body>
+</html>
