@@ -40,6 +40,7 @@ photo-web/
 - Create a new bucket (e.g., `my-photo-upload-bucket`)
 - Disable "Block all public access"
 - Enable **Static website hosting** if you want to use S3 for frontend
+- Add the Bucket Policy and CORS Policy in the Bucket Permission Tab.
 
 #### ✅ DynamoDB
 - Create a table named `photos`
@@ -47,8 +48,9 @@ photo-web/
 
 #### ✅ EC2
 - Launch Amazon Linux 2 Instance
-- Allow inbound rules: **HTTP (80), HTTPS (443), and SSH (22)**
+- Allow inbound rules: **HTTP (80) , Port (3000) and SSH (22) **
 - SSH into instance and install Node.js, npm, git
+- Attach the IAM Role with S3 FullAccess and DynamoDB Full Access in the Instance by Clicking the Action -> Security -> Modify IAM 
 
 ```
 sudo yum update -y
@@ -56,7 +58,8 @@ sudo yum install git -y
 curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
 sudo yum install -y nodejs
 ```
-
+#### ✅ MAKE CHANGES
+- Extract the Content and Change the values of the Environment Variables and Other Necessary Files.
 
 ### Step 3: Run the Server
 
@@ -88,5 +91,4 @@ To add deletion functionality, use the `id` field (UUID) and create a `/delete/:
 ## 🏁 Future Improvements
 - Add user authentication (Cognito or JWT)
 - Drag-and-drop image uploads
-- Pagination or infinite scroll for gallery
-- Image categorization or tagging
+- Serverless Implement With API Gateway Along with AWS Lambda or with Beanstack.
