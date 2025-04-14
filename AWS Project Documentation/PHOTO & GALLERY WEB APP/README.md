@@ -57,20 +57,6 @@ curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
 sudo yum install -y nodejs
 ```
 
-### Step 2: Clone and Configure Project
-
-```
-git clone https://github.com/yourusername/photo-web.git
-cd photo-web
-npm install
-```
-
-#### Add a `.env` file:
-```
-S3_BUCKET=my-photo-upload-bucket-nivas
-DDB_TABLE=photos
-AWS_REGION=ap-south-1
-```
 
 ### Step 3: Run the Server
 
