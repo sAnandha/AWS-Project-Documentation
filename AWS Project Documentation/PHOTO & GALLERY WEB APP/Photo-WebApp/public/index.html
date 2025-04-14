@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> Photo Upload</title>
+  <style>
+    :root {
+      --bg: #E9E9E0;
+      --text: #4D626E;
+      --button: #52CA88;
+      --image-name: #696CFF;
+      --white: #ffffff;
+      --border: #cccccc;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 40px 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: var(--text);
+    }
+
+    form {
+      background-color: var(--white);
+      max-width: 500px;
+      margin: 0 auto 40px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    label {
+      font-weight: bold;
+      color: var(--button);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: var(--button);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #44b778;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--white);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    th {
+      background-color: var(--button);
+      color: white;
+    }
+
+    td img {
+      max-width: 60px;
+      border-radius: 6px;
+      border: 2px solid var(--button);
+    }
+
+    td.name {
+      color: var(--image-name);
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      form, table {
+        width: 100%;
+      }
+
+      img {
+        max-width: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Upload a Photo</h2>
+  <form id="uploadForm">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" placeholder="Enter name" required>
+
+    <label for="description">Description</label>
+    <textarea name="description" id="description" placeholder="Enter description" required></textarea>
+
+    <label for="photo">Photo</label>
+    <input type="file" name="photo" id="photo" accept="image/*" required>
+
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>Uploaded Photos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>SNO</th>
+        <th>Thumbnail</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="photoTableBody"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    const tableBody = document.getElementById("photoTableBody");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const res = await fetch("/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      if (res.ok) {
+        alert("Upload successful!");
+        form.reset();
+        loadPhotos();
+      } else {
+        alert("Upload failed.");
+      }
+    });
+
+    async function loadPhotos() {
+      const res = await fetch("/photos");
+      const photos = await res.json();
+      tableBody.innerHTML = "";
+
+      photos.forEach((p, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${i + 1}</td>
+          <td><img src="${p.imageUrl}" alt="${p.name}"></td>
+          <td class="name">${p.name}</td>
+          <td>${p.description}</td>
+          <td><button onclick="deletePhoto('${p.id}', '${p.imageUrl}')">Delete</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    async function deletePhoto(id, imageUrl) {
+      const confirmed = confirm("Delete this photo?");
+      if (!confirmed) return;
+
+      const res = await fetch(`/photo/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl })
+      });
+
+      if (res.ok) {
+        alert("Deleted!");
+        loadPhotos();
+      } else {
+        alert("Delete failed.");
+      }
+    }
+
+    loadPhotos();
+  </script>
+
+</body>
+</html>
