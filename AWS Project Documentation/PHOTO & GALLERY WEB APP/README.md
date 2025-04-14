@@ -1,6 +1,9 @@
 
 # 📸 Photo Upload & Gallery Web App
 
+![Architecture Diagram](https://github.com/sAnandha/AWS-Project-Documentation/blob/main/AWS%20Project%20Documentation/PHOTO%20%26%20GALLERY%20WEB%20APP/Architecture%20Diagram.png?raw=true)
+
+
 ## 📝 Project Description
 This project is a **Photo Upload & Gallery Web App** built using **Node.js** and **AWS Services**. It allows users to upload images with a name and description. The uploaded images are stored in **Amazon S3**, metadata is stored in **DynamoDB**, and the application is hosted on **Amazon EC2**. A web interface displays the list of uploaded photos as thumbnails in a responsive table.
 
