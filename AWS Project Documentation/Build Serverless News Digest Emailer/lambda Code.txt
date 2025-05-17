@@ -1,0 +1,30 @@
+import boto3
+import json
+import requests
+
+def lambda_handler(event, context):
+    secret_name = "api-name-on-secret-manager"
+    region_name = "region"  # Change if needed
+
+    # Get secret from Secrets Manager
+    secrets_client = boto3.client("secretsmanager", region_name=region_name)
+    secret = secrets_client.get_secret_value(SecretId=secret_name)
+    api_key = json.loads(secret["SecretString"])["api_key"]
+
+    # Fetch news
+    url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={api_key}"
+    response = requests.get(url)
+    data = response.json()
+
+    top_articles = data["articles"][:3]
+    content = "\n\n".join([f"Title: {a['title']}\nURL: {a['url']}" for a in top_articles])
+
+    # Publish to SNS only
+    sns = boto3.client("sns", region_name=region_name)
+    sns.publish(
+        TopicArn="YOUR_SNS_TOPIC_ARN",  # Replace with your actual SNS Topic ARN
+        Subject="Daily News Update",
+        Message=content
+    )
+
+    return {"statusCode": 200, "body": "News sent via SNS!"}
